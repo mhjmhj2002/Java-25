@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: crud
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/cruddb
+    username: crud
+    password: crud
+
+  jpa:
+    defer-datasource-initialization: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    schemas: public
+    default-schema: public
