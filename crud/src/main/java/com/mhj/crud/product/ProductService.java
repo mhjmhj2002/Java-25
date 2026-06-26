@@ -1,9 +1,11 @@
 package com.mhj.crud.product;
 
-import com.mhj.crud.exception.ResourceNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+
+import com.mhj.crud.exception.ResourceNotFoundException;
 
 @Service
 public class ProductService {
@@ -23,9 +25,13 @@ public class ProductService {
         return mapper.toResponse(savedProduct);
     }
 
-    public Page<ProductResponse> findAll(Pageable pageable) {
-        return repository.findAll(pageable)
-                .map(mapper::toResponse);
+    public Page<ProductResponse> findAll(ProductFilter filter, Pageable pageable) {
+    	Specification<Product> specification =
+    	        ProductSpecification.byFilter(filter);
+
+    	return repository
+    	        .findAll(specification, pageable)
+    	        .map(mapper::toResponse);
     }
 
     public ProductResponse findById(Long id) {
