@@ -13,6 +13,20 @@ arquivo.
 - Incluir secao de direcionamento para CI/CD e observabilidade como parte da
   estrategia de maturidade do projeto.
 
+## \[0.7.0\] - 2026-06-27
+
+### Added
+
+-   Pipeline de CI com GitHub Actions em `.github/workflows/ci.yml`
+-   Gatilhos de execucao em `push` e `pull_request` para `main`
+-   Setup de Java 25 (Temurin) com cache Maven no workflow
+
+### Changed
+
+-   Automacao da validacao de testes Maven via `mvn -B clean test` na pipeline
+
+------------------------------------------------------------------------
+
 ## \[0.6.0\] - 2026-06-27
 
 ### Added

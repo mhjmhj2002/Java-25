@@ -3,6 +3,7 @@
 ![Java](https://img.shields.io/badge/Java-25-007396?logo=openjdk&logoColor=white)
 ![Spring Boot](https://img.shields.io/badge/Spring_Boot-4.1.0-6DB33F?logo=springboot&logoColor=white)
 ![Maven](https://img.shields.io/badge/Maven-Build-C71A36?logo=apachemaven&logoColor=white)
+![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-CI-2088FF?logo=githubactions&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED?logo=docker&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-4169E1?logo=postgresql&logoColor=white)
 ![License](https://img.shields.io/badge/License-Pending-lightgrey)
@@ -27,6 +28,7 @@ Projeto de estudo e portfólio técnico com foco em práticas modernas de backen
 - MapStruct
 - OpenAPI/Swagger (springdoc)
 - JUnit 5, Mockito e MockMvc
+- GitHub Actions (CI)
 - Docker e Docker Compose
 
 ## Visao Geral da Arquitetura
@@ -125,6 +127,16 @@ docker compose up -d postgres
 ./mvnw clean test
 ```
 
+## CI (GitHub Actions)
+
+O projeto possui pipeline de Integracao Continua em `.github/workflows/ci.yml` para validar build e testes automaticamente.
+
+- Dispara em `push` para `main`
+- Dispara em `pull_request` para `main`
+- Runner: `ubuntu-latest`
+- Java: Temurin 25 com cache de dependencias Maven
+- Comando executado: `mvn -B clean test`
+
 ### Endpoints de documentacao
 
 - Swagger UI: `http://localhost:8080/swagger-ui.html`
@@ -218,7 +230,7 @@ curl -X DELETE "http://localhost:8080/api/products/1"
 | 0.4.0 | Concluido | Unit Tests (Mockito) |
 | 0.5.0 | Concluido | Controller Tests (MockMvc) |
 | 0.6.0 | Concluido | Dockerfile + Docker Compose |
-| 0.7.0 | Planejado | GitHub Actions (CI) |
+| 0.7.0 | Concluido | GitHub Actions (CI) |
 | 0.8.0 | Planejado | Micrometer + Actuator |
 | 0.9.0 | Planejado | Repository Tests (Testcontainers) |
 | 1.0.0 | Planejado | Release production ready + docs enterprise |
@@ -236,7 +248,6 @@ curl -X DELETE "http://localhost:8080/api/products/1"
 
 Itens previstos para as proximas versoes:
 
-- Pipeline de CI com GitHub Actions (`build`, `test`, `package`).
 - Integracao com quality gates (ex.: SpotBugs, Checkstyle, Sonar).
 - Metricas e health checks com Actuator + Micrometer.
 - Exportacao de metricas para Prometheus/Grafana.
@@ -244,4 +255,4 @@ Itens previstos para as proximas versoes:
 
 ## Versao Atual
 
-`0.6.0`
+`0.7.0`
