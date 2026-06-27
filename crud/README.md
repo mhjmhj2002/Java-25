@@ -1,320 +1,247 @@
 # CRUD Enterprise
 
-Projeto desenvolvido com foco em boas práticas de desenvolvimento utilizando **Java 25** e **Spring Boot 4**.
+![Java](https://img.shields.io/badge/Java-25-007396?logo=openjdk&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-4.1.0-6DB33F?logo=springboot&logoColor=white)
+![Maven](https://img.shields.io/badge/Maven-Build-C71A36?logo=apachemaven&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED?logo=docker&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-4169E1?logo=postgresql&logoColor=white)
+![License](https://img.shields.io/badge/License-Pending-lightgrey)
 
-O objetivo é evoluir um CRUD simples até um projeto com características encontradas em aplicações enterprise, servindo como laboratório de estudos e portfólio técnico.
+Projeto de estudo e portfólio técnico com foco em práticas modernas de backend Java:
 
----
+- API REST de produtos com Spring Boot 4.1
+- Arquitetura em camadas (controller, service, repository)
+- Banco relacional com PostgreSQL e versionamento com Flyway
+- Testes automatizados (JUnit 5, Mockito, MockMvc)
+- Containerização com Docker e Docker Compose
 
-# Tecnologias
+## Stack Tecnológica
 
 - Java 25
 - Spring Boot 4.1
-- Maven
-- Spring Data JPA
 - Spring Web MVC
+- Spring Data JPA
 - Bean Validation
 - PostgreSQL
 - Flyway
 - MapStruct
-- OpenAPI / Swagger
-- JUnit 5
-- Mockito
-- MockMvc
-- Docker
+- OpenAPI/Swagger (springdoc)
+- JUnit 5, Mockito e MockMvc
+- Docker e Docker Compose
 
----
+## Visao Geral da Arquitetura
 
-# Funcionalidades
+Fluxo principal da API:
 
-## Backend
+1. `ProductController` recebe requests HTTP em `/api/products`.
+2. `ProductService` aplica regras de negocio e orquestra o caso de uso.
+3. `ProductRepository` acessa o banco via Spring Data JPA + Specification.
+4. `ProductMapper` converte entidade <-> DTO (request/response).
+5. `GlobalExceptionHandler` padroniza respostas de erro.
 
-- CRUD completo de Produtos
-- DTOs utilizando Java Record
-- Mapeamento com MapStruct
-- Validação com Bean Validation
-- Tratamento global de exceções
-- Paginação
-- Ordenação
-- Filtros dinâmicos utilizando JPA Specification
+```text
+HTTP Client
+   |
+   v
+ProductController
+   |
+   v
+ProductService
+   |            \
+   v             v
+ProductRepository ProductMapper
+   |
+   v
+PostgreSQL (Flyway)
+```
 
-## Banco de Dados
+## Estrutura de Diretorios
 
-- PostgreSQL
-- Versionamento utilizando Flyway
-- Hibernate configurado em modo Validate
+```text
+crud/
+|-- CHANGELOG.md
+|-- docker-compose.yml
+|-- Dockerfile
+|-- HELP.md
+|-- mvnw
+|-- mvnw.cmd
+|-- pom.xml
+|-- README.md
+`-- src/
+	|-- main/
+	|   |-- java/com/mhj/crud/
+	|   |   |-- CrudApplication.java
+	|   |   |-- config/
+	|   |   |   `-- OpenApiConfig.java
+	|   |   |-- exception/
+	|   |   |   |-- ApiErrorResponse.java
+	|   |   |   |-- GlobalExceptionHandler.java
+	|   |   |   `-- ResourceNotFoundException.java
+	|   |   `-- product/
+	|   |       |-- Product.java
+	|   |       |-- ProductController.java
+	|   |       |-- ProductFilter.java
+	|   |       |-- ProductMapper.java
+	|   |       |-- ProductRepository.java
+	|   |       |-- ProductRequest.java
+	|   |       |-- ProductResponse.java
+	|   |       |-- ProductService.java
+	|   |       `-- ProductSpecification.java
+	|   `-- resources/
+	|       |-- application.yaml
+	|       `-- db/migration/
+	|           `-- V1__create_products.sql
+	`-- test/
+		`-- java/com/mhj/crud/
+			|-- CrudApplicationTests.java
+			`-- product/
+				|-- ProductControllerTest.java
+				`-- ProductServiceTest.java
+```
 
-## Documentação
+## Guia de Execucao Local
 
-- OpenAPI 3
-- Swagger UI
-
-## Testes
-
-- Testes unitários da camada Service
-- MockMvc para testes da camada REST
-
----
-
-# Requisitos
+### Pre-requisitos
 
 - Java 25
-- Maven 3.9+
-- Docker
-- Docker Compose
+- Maven 3.9+ (ou Maven Wrapper)
+- PostgreSQL 17+ em execucao local
 
-Verifique:
-
-```bash
-java -version
-mvn -v
-docker --version
-docker compose version
-```
-
----
-
-# Executando o Banco
+### 1) Subir apenas o banco com Docker (opcional e recomendado)
 
 ```bash
-docker compose up -d
+docker compose up -d postgres
 ```
 
-Verifique:
+### 2) Executar a aplicacao localmente
 
 ```bash
-docker ps
+./mvnw clean spring-boot:run
 ```
 
-Banco:
-
-| Propriedade | Valor |
-|-------------|--------|
-| Banco | cruddb |
-| Usuário | crud |
-| Senha | crud |
-| Porta | 5432 |
-
----
-
-# Executando a Aplicação
+### 3) Executar testes
 
 ```bash
-mvn clean spring-boot:run
+./mvnw clean test
 ```
 
----
+### Endpoints de documentacao
 
-# Executando os Testes
+- Swagger UI: `http://localhost:8080/swagger-ui.html`
+- OpenAPI JSON: `http://localhost:8080/v3/api-docs`
 
-Todos os testes:
+## Guia de Execucao com Docker
+
+### Subir ambiente completo (app + postgres)
 
 ```bash
-mvn clean test
+docker compose up -d --build
 ```
 
-Apenas testes unitários:
+### Acompanhar logs da aplicacao
 
 ```bash
-mvn -Dtest=ProductServiceTest test
+docker compose logs -f app
 ```
 
-Apenas testes REST:
+### Parar somente a aplicacao
 
 ```bash
-mvn -Dtest=ProductControllerTest test
+docker compose stop app
 ```
 
----
+### Parar todo o ambiente
 
-# Endpoints
-
-## Criar Produto
-
-```
-POST /api/products
+```bash
+docker compose stop
 ```
 
-```json
-{
-  "name": "Notebook",
-  "description": "Dell Latitude",
-  "price": 3500
-}
+## Exemplos de Requisicoes da API
+
+Base URL: `http://localhost:8080`
+
+### Criar produto
+
+```bash
+curl -X POST "http://localhost:8080/api/products" \
+  -H "Content-Type: application/json" \
+  -d '{
+	"name": "Notebook Pro",
+	"description": "16GB RAM, 1TB SSD",
+	"price": 7999.90
+  }'
 ```
 
----
+### Listar produtos com paginacao e ordenacao
 
-## Buscar Produto
-
-```
-GET /api/products/{id}
+```bash
+curl "http://localhost:8080/api/products?page=0&size=10&sort=price,desc"
 ```
 
----
+### Filtrar por nome e faixa de preco
 
-## Listar Produtos
-
-```
-GET /api/products
+```bash
+curl "http://localhost:8080/api/products?name=note&minPrice=1000&maxPrice=9000"
 ```
 
-Paginação:
+### Buscar por ID
 
-```
-?page=0&size=10
-```
-
-Ordenação:
-
-```
-?sort=name,asc
+```bash
+curl "http://localhost:8080/api/products/1"
 ```
 
-Filtros:
+### Atualizar produto
 
-```
-?name=note
-```
-
-```
-?minPrice=1000
-```
-
-```
-?maxPrice=5000
+```bash
+curl -X PUT "http://localhost:8080/api/products/1" \
+  -H "Content-Type: application/json" \
+  -d '{
+	"name": "Notebook Pro 2026",
+	"description": "32GB RAM, 1TB SSD",
+	"price": 8999.90
+  }'
 ```
 
-```
-?name=note&minPrice=1000&maxPrice=5000
-```
+### Remover produto
 
----
-
-## Atualizar Produto
-
-```
-PUT /api/products/{id}
+```bash
+curl -X DELETE "http://localhost:8080/api/products/1"
 ```
 
----
+## Roadmap Visual
 
-## Remover Produto
+| Versao | Status | Entregas |
+|---|---|---|
+| 0.1.0 | Concluido | Bootstrap, CRUD, PostgreSQL, Flyway |
+| 0.2.0 | Concluido | JPA Specification |
+| 0.3.0 | Concluido | OpenAPI / Swagger |
+| 0.4.0 | Concluido | Unit Tests (Mockito) |
+| 0.5.0 | Concluido | Controller Tests (MockMvc) |
+| 0.6.0 | Concluido | Dockerfile + Docker Compose |
+| 0.7.0 | Planejado | GitHub Actions (CI) |
+| 0.8.0 | Planejado | Micrometer + Actuator |
+| 0.9.0 | Planejado | Repository Tests (Testcontainers) |
+| 1.0.0 | Planejado | Release production ready + docs enterprise |
 
-```
-DELETE /api/products/{id}
-```
+## Convencoes do Projeto
 
----
+- Padrao arquitetural em camadas por dominio (`product`) e responsabilidade.
+- DTOs com Java `record` para requests e responses.
+- Mapeamento de DTOs com MapStruct.
+- Validacao de entrada com Bean Validation.
+- Erros de negocio e recursos nao encontrados tratados globalmente.
+- Migrações de banco versionadas com Flyway.
 
-# Documentação
+## Futuro: CI/CD e Observabilidade
 
-Swagger:
+Itens previstos para as proximas versoes:
 
-```
-http://localhost:8080/swagger-ui.html
-```
+- Pipeline de CI com GitHub Actions (`build`, `test`, `package`).
+- Integracao com quality gates (ex.: SpotBugs, Checkstyle, Sonar).
+- Metricas e health checks com Actuator + Micrometer.
+- Exportacao de metricas para Prometheus/Grafana.
+- Estrategia de release automatizada com versionamento semantico.
 
-OpenAPI JSON:
+## Versao Atual
 
-```
-http://localhost:8080/v3/api-docs
-```
-
----
-
-# Estrutura
-
-```
-src
-├── main
-│   ├── java
-│   │   └── com.mhj.crud
-│   │       ├── config
-│   │       ├── exception
-│   │       └── product
-│   └── resources
-│       ├── application.yaml
-│       └── db
-│           └── migration
-└── test
-    └── java
-        └── com.mhj.crud
-            └── product
-```
-
----
-
-# Qualidade
-
-Atualmente o projeto possui:
-
-- Arquitetura em camadas
-- DTOs utilizando Java Record
-- MapStruct
-- Bean Validation
-- Exception Handler Global
-- Flyway
-- PostgreSQL
-- Paginação
-- Specification
-- OpenAPI
-- Testes Unitários
-- Testes REST com MockMvc
-
----
-
-# Roadmap
-
-## ✅ 0.1.0
-
-- Bootstrap
-- CRUD
-- PostgreSQL
-- Flyway
-
-## ✅ 0.2.0
-
-- JPA Specification
-
-## ✅ 0.3.0
-
-- OpenAPI / Swagger
-
-## ✅ 0.4.0
-
-- Unit Tests (Mockito)
-
-## ✅ 0.5.0
-
-- Controller Tests (MockMvc)
-
-## ⏳ 0.6.0
-
-- Testcontainers
-
-## ⏳ 0.7.0
-
-- Dockerfile
-
-## ⏳ 0.8.0
-
-- GitHub Actions
-
-## ⏳ 0.9.0
-
-- Micrometer + Spring Actuator
-
-## ⏳ 1.0.0
-
-- Projeto preparado para produção
-
----
-
-# Versão
-
-**0.5.0**
-
----
-
-Projeto desenvolvido para estudos avançados em Java e Spring Boot, com foco em arquitetura enterprise e preparação para entrevistas técnicas de nível Sênior / Tech Lead.
+`0.6.0`

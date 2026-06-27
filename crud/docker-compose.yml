@@ -11,5 +11,17 @@ services:
     volumes:
       - crud-postgres-data:/var/lib/postgresql/data
 
+  app:
+    build: .
+    container_name: crud-app
+    depends_on:
+      - postgres
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/cruddb
+      SPRING_DATASOURCE_USERNAME: crud
+      SPRING_DATASOURCE_PASSWORD: crud
+    ports:
+      - "8080:8080"
+
 volumes:
   crud-postgres-data:

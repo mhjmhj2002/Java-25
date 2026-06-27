@@ -3,9 +3,9 @@ spring:
     name: crud
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/cruddb
-    username: crud
-    password: crud
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/cruddb}
+    username: ${SPRING_DATASOURCE_USERNAME:crud}
+    password: ${SPRING_DATASOURCE_PASSWORD:crud}
 
   jpa:
     defer-datasource-initialization: false
@@ -28,4 +28,4 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
     operations-sorter: method
-    tags-sorter: alpha	
+    tags-sorter: alpha
