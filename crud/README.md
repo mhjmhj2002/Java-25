@@ -1,8 +1,8 @@
-# CRUD Enterprise - Java 25 + Spring Boot 4
+# CRUD Enterprise
 
-Projeto de estudo e portfólio com foco em boas práticas modernas para aplicações Java utilizando Spring Boot.
+Projeto desenvolvido com foco em boas práticas de desenvolvimento utilizando **Java 25** e **Spring Boot 4**.
 
-O objetivo deste repositório é evoluir um CRUD simples até um projeto com características encontradas em aplicações enterprise, aplicando arquitetura limpa, boas práticas, testes automatizados, observabilidade, CI/CD e tecnologias utilizadas no mercado.
+O objetivo é evoluir um CRUD simples até um projeto com características encontradas em aplicações enterprise, servindo como laboratório de estudos e portfólio técnico.
 
 ---
 
@@ -11,28 +11,48 @@ O objetivo deste repositório é evoluir um CRUD simples até um projeto com car
 - Java 25
 - Spring Boot 4.1
 - Maven
-- Spring Web MVC
 - Spring Data JPA
+- Spring Web MVC
 - Bean Validation
 - PostgreSQL
-- Docker Compose
 - Flyway
 - MapStruct
+- OpenAPI / Swagger
+- JUnit 5
+- Mockito
+- MockMvc
+- Docker
 
 ---
 
-# Funcionalidades da versão 0.1.0
+# Funcionalidades
+
+## Backend
 
 - CRUD completo de Produtos
 - DTOs utilizando Java Record
-- Mapeamento entre Entity e DTO utilizando MapStruct
-- Persistência com Spring Data JPA
-- Banco PostgreSQL executando em Docker
-- Versionamento do banco utilizando Flyway
-- Validação automática do Schema pelo Hibernate
-- Paginação e Ordenação utilizando Pageable
-- Tratamento global de exceções com @RestControllerAdvice
-- Bean Validation para validação das requisições
+- Mapeamento com MapStruct
+- Validação com Bean Validation
+- Tratamento global de exceções
+- Paginação
+- Ordenação
+- Filtros dinâmicos utilizando JPA Specification
+
+## Banco de Dados
+
+- PostgreSQL
+- Versionamento utilizando Flyway
+- Hibernate configurado em modo Validate
+
+## Documentação
+
+- OpenAPI 3
+- Swagger UI
+
+## Testes
+
+- Testes unitários da camada Service
+- MockMvc para testes da camada REST
 
 ---
 
@@ -43,7 +63,7 @@ O objetivo deste repositório é evoluir um CRUD simples até um projeto com car
 - Docker
 - Docker Compose
 
-Verifique as versões instaladas:
+Verifique:
 
 ```bash
 java -version
@@ -54,229 +74,247 @@ docker compose version
 
 ---
 
-# Subindo o Banco de Dados
-
-Na raiz do projeto execute:
+# Executando o Banco
 
 ```bash
-sudo docker compose up -d
+docker compose up -d
 ```
 
-Verifique se o container foi iniciado:
+Verifique:
 
 ```bash
-sudo docker ps
+docker ps
 ```
 
-Configuração do banco:
+Banco:
 
 | Propriedade | Valor |
 |-------------|--------|
-| Database | cruddb |
+| Banco | cruddb |
 | Usuário | crud |
 | Senha | crud |
 | Porta | 5432 |
 
 ---
 
-# Executando a aplicação
+# Executando a Aplicação
 
 ```bash
 mvn clean spring-boot:run
 ```
 
-Durante a inicialização o Flyway executará automaticamente as migrations.
+---
 
-Verifique as tabelas criadas:
+# Executando os Testes
+
+Todos os testes:
 
 ```bash
-sudo docker exec -it crud-postgres psql -U crud -d cruddb -c "\dt"
+mvn clean test
 ```
 
-Resultado esperado:
+Apenas testes unitários:
 
-```text
-               List of relations
- Schema |         Name
---------+-----------------------
- public | flyway_schema_history
- public | products
+```bash
+mvn -Dtest=ProductServiceTest test
+```
+
+Apenas testes REST:
+
+```bash
+mvn -Dtest=ProductControllerTest test
 ```
 
 ---
 
 # Endpoints
 
-Base URL
-
-```
-http://localhost:8080/api/products
-```
-
 ## Criar Produto
 
-```bash
-curl -X POST http://localhost:8080/api/products \
--H "Content-Type: application/json" \
--d '{
-  "name":"Notebook",
-  "description":"Dell Latitude",
-  "price":3500.00
-}'
+```
+POST /api/products
 ```
 
----
-
-## Listar Produtos
-
-```bash
-curl "http://localhost:8080/api/products?page=0&size=10&sort=name,asc"
+```json
+{
+  "name": "Notebook",
+  "description": "Dell Latitude",
+  "price": 3500
+}
 ```
 
 ---
 
 ## Buscar Produto
 
-```bash
-curl http://localhost:8080/api/products/1
+```
+GET /api/products/{id}
+```
+
+---
+
+## Listar Produtos
+
+```
+GET /api/products
+```
+
+Paginação:
+
+```
+?page=0&size=10
+```
+
+Ordenação:
+
+```
+?sort=name,asc
+```
+
+Filtros:
+
+```
+?name=note
+```
+
+```
+?minPrice=1000
+```
+
+```
+?maxPrice=5000
+```
+
+```
+?name=note&minPrice=1000&maxPrice=5000
 ```
 
 ---
 
 ## Atualizar Produto
 
-```bash
-curl -X PUT http://localhost:8080/api/products/1 \
--H "Content-Type: application/json" \
--d '{
-  "name":"Notebook Dell",
-  "description":"Latitude Atualizado",
-  "price":4200.00
-}'
+```
+PUT /api/products/{id}
 ```
 
 ---
 
 ## Remover Produto
 
-```bash
-curl -X DELETE http://localhost:8080/api/products/1
+```
+DELETE /api/products/{id}
 ```
 
 ---
 
-# Exemplo de erro de validação
+# Documentação
 
-Requisição:
+Swagger:
 
-```json
-{
-  "name":"",
-  "price":0
-}
+```
+http://localhost:8080/swagger-ui.html
 ```
 
-Resposta:
+OpenAPI JSON:
 
-```json
-{
-  "timestamp": "...",
-  "status": 400,
-  "error": "Bad Request",
-  "message": "Erro de validação",
-  "details": [
-    "name: Nome é obrigatório",
-    "price: Preço deve ser maior que zero"
-  ]
-}
+```
+http://localhost:8080/v3/api-docs
 ```
 
 ---
 
-# Estrutura do Projeto
+# Estrutura
 
 ```
 src
 ├── main
 │   ├── java
 │   │   └── com.mhj.crud
-│   │       ├── CrudApplication
+│   │       ├── config
 │   │       ├── exception
-│   │       │   ├── ApiErrorResponse
-│   │       │   ├── GlobalExceptionHandler
-│   │       │   └── ResourceNotFoundException
 │   │       └── product
-│   │           ├── Product
-│   │           ├── ProductController
-│   │           ├── ProductMapper
-│   │           ├── ProductRepository
-│   │           ├── ProductRequest
-│   │           ├── ProductResponse
-│   │           └── ProductService
 │   └── resources
 │       ├── application.yaml
 │       └── db
 │           └── migration
-│               └── V1__create_products.sql
+└── test
+    └── java
+        └── com.mhj.crud
+            └── product
 ```
 
 ---
 
-# Banco de Dados
+# Qualidade
 
-As tabelas são criadas através do Flyway.
+Atualmente o projeto possui:
 
-Migration atual:
-
-```
-src/main/resources/db/migration/V1__create_products.sql
-```
-
-O Hibernate está configurado apenas para validar o schema:
-
-```yaml
-spring:
-  jpa:
-    hibernate:
-      ddl-auto: validate
-```
-
-Dessa forma toda alteração estrutural do banco deverá ser realizada através de migrations.
+- Arquitetura em camadas
+- DTOs utilizando Java Record
+- MapStruct
+- Bean Validation
+- Exception Handler Global
+- Flyway
+- PostgreSQL
+- Paginação
+- Specification
+- OpenAPI
+- Testes Unitários
+- Testes REST com MockMvc
 
 ---
 
 # Roadmap
 
-## v0.2.0
-- Filtros dinâmicos utilizando JPA Specification
+## ✅ 0.1.0
 
-## v0.3.0
+- Bootstrap
+- CRUD
+- PostgreSQL
+- Flyway
+
+## ✅ 0.2.0
+
+- JPA Specification
+
+## ✅ 0.3.0
+
 - OpenAPI / Swagger
 
-## v0.4.0
-- Testes Unitários com JUnit e Mockito
+## ✅ 0.4.0
 
-## v0.5.0
+- Unit Tests (Mockito)
+
+## ✅ 0.5.0
+
+- Controller Tests (MockMvc)
+
+## ⏳ 0.6.0
+
 - Testcontainers
 
-## v0.6.0
-- Dockerfile da aplicação
+## ⏳ 0.7.0
 
-## v0.7.0
-- Observabilidade com Micrometer
+- Dockerfile
 
-## v0.8.0
-- GitHub Actions (CI)
+## ⏳ 0.8.0
 
-## v1.0.0
-- Projeto preparado para ambiente de produção
+- GitHub Actions
 
----
+## ⏳ 0.9.0
 
-# Versão Atual
+- Micrometer + Spring Actuator
 
-**0.1.0-SNAPSHOT**
+## ⏳ 1.0.0
+
+- Projeto preparado para produção
 
 ---
 
-Desenvolvido como projeto de estudos para aprofundamento em Java, Spring Boot e arquitetura de aplicações enterprise.
+# Versão
+
+**0.5.0**
+
+---
+
+Projeto desenvolvido para estudos avançados em Java e Spring Boot, com foco em arquitetura enterprise e preparação para entrevistas técnicas de nível Sênior / Tech Lead.
